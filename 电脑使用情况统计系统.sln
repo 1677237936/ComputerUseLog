@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "电脑使用情况统计系统", "电脑使用情况统计系统\电脑使用情况统计系统.pyproj", "{D70E682B-3C34-4576-83B4-5A12B8C94928}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D70E682B-3C34-4576-83B4-5A12B8C94928}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D70E682B-3C34-4576-83B4-5A12B8C94928}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6A4F5E8-7D8D-4787-AE70-92E723F0F71F}
+	EndGlobalSection
+EndGlobal
