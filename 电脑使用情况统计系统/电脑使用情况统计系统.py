@@ -7,41 +7,34 @@ import os
 def GetForegroundInfo():
     """获取前台窗口信息"""
     #[进程路径,窗口标题,时长]
-    last_time=int(time.time())
-    last_hwnd=me_hwnd #窗口句柄
-    last_text=win32gui.GetWindowText(last_hwnd) #窗口标题
-    _,last_pid=win32process.GetWindowThreadProcessId(last_hwnd) #进程标识符
-    last_handle=win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,False,last_pid) #进程句柄
-    last_path=win32process.GetModuleFileNameEx(last_handle,0) #进程路径
     while True:
+        global last_text,last_path,last_time
         hwnd=win32gui.GetForegroundWindow() #窗口句柄
         text=win32gui.GetWindowText(hwnd) #窗口标题
         _,pid=win32process.GetWindowThreadProcessId(hwnd) #进程标识符
+        #数字超出2字节整型范围或小于0代表获取出错
+        if pid >= 65535 or pid < 0:
+            continue
         handle=win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,False,pid) #进程句柄
         path=win32process.GetModuleFileNameEx(handle,0) #进程路径
-        if text != last_text or path !=last_path:
+        #判断今天是否已结束
+        time_now=time.localtime(time.time())
+        IsDayEnd=time_now[3]==23 and time_now[4]==59 and time_now[5]==59
+        #如果和上次不同或今天已结束则写入文件
+        if (text != last_text or path !=last_path) or IsDayEnd:
             now_time=int(time.time())
-            now_tuple=(path,text)
+            now_tuple=(last_path,last_text)
             if now_tuple in datadict:
                 datadict.update({now_tuple:datadict[now_tuple]+(now_time-last_time)})
             else:
                 datadict.update({now_tuple:now_time-last_time})
-            file=open('data.txt','wb')
-            file.write(str(datadict).encode("utf-8"))
-            file.close()
-            file=open('log.txt','ab+')
-            file.write(str(time.strftime("%H:%M:%S", time.localtime(last_time))+"-"+time.strftime("%H:%M:%S", time.localtime(now_time))+" : "+last_text+" "+last_path+" 用时:"+str(now_time-last_time)+"s\n").encode("utf-8"))
-            file.close()
+            SaveData(datadict,last_time,now_time)
             last_text=text
             last_path=path
-            last_time=now_time
-        '''
-         print(hwnd)
-         print(text)
-         print(pid)
-         print(handle)
-         print(path)
-        '''
+            if IsDayEnd:
+                last_time=now_time+1
+            else:
+                last_time=now_time
         time.sleep(1)
 
 def HotKeyShowWindow():
@@ -52,8 +45,27 @@ def HotKeyShowWindow():
             break
         time.sleep(0.1)
 
+def SaveData(datadict,last_time,now_time):
+    """将数据及日志写入文件"""
+    file=open('data.txt','wb')
+    file.write(str(datadict).encode("utf-8"))
+    file.close()
+    isPathExists=os.path.exists('log')
+    if not isPathExists:
+        os.mkdir("log")
+    file=open('log/'+time.strftime("%Y-%m-%d", time.localtime(now_time))+'.txt','ab+')
+    file.write(str(time.strftime("%H:%M:%S", time.localtime(last_time))+" - "+time.strftime("%H:%M:%S", time.localtime(now_time))+" : "+last_text+" "+last_path+" 用时:"+str(now_time-last_time)+"s\n").encode("utf-8"))
+    file.close()
+
 #获取自身窗口句柄
 me_hwnd=win32console.GetConsoleWindow()
+#初始化信息
+last_time=int(time.time())
+last_hwnd=me_hwnd #窗口句柄
+last_text=win32gui.GetWindowText(last_hwnd) #窗口标题
+_,last_pid=win32process.GetWindowThreadProcessId(last_hwnd) #进程标识符
+last_handle=win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,False,last_pid) #进程句柄
+last_path=win32process.GetModuleFileNameEx(last_handle,0) #进程路径
 #禁用关闭按钮
 close_button=win32gui.GetSystemMenu(me_hwnd,0)
 win32gui.RemoveMenu(close_button,win32con.SC_CLOSE,win32con.MF_REMOVE)
@@ -70,12 +82,6 @@ else:
     file=open('data.txt','wb')
     file.write(str(datadict).encode("utf-8"))
     file.close()
-#判断本地是否存在日志文件,不存在则创建
-isLogExists=os.path.exists('log.txt')
-if(not isLogExists):
-    file=open('log.txt','wb')
-    file.write("".encode("utf-8"))
-    file.close()
 #开启子线程获取窗口信息
 t_getinfo=threading._start_new_thread(GetForegroundInfo)
 #输出提示信息
@@ -86,15 +92,43 @@ print("系统已开始运行,输入'help'可获取命令列表")
 while True:
     cmd=input(">")
     if cmd =='help':
+        #命令列表
         print("help - 命令列表")
         print("hide - 隐藏窗口(Ctrl+F10重新显示)")
-        print("q - 退出系统")
+        print("d/data - 显示电脑总使用数据(降序)")
+        print("t/today - 显示今天的电脑使用日志")
+        print("q/quit - 退出系统")
     elif cmd=='hide':
+        #隐藏窗口
         t_showwindow=threading._start_new_thread(HotKeyShowWindow)
         win32gui.ShowWindow(me_hwnd,win32con.SW_HIDE)
-    elif cmd=='q':
-        
+    elif cmd=='d' or cmd=='data':
+        #排序后输出
+        zipped_dict=zip(datadict.values(),datadict.keys())
+        sort_list=list(sorted(zipped_dict,key=lambda s: s[0], reverse=True))
+        for i in sort_list:
+            print("总时长:"+str(i[0])+"s 应用:"+i[1][1]+" 进程路径:"+i[1][0])
+    elif cmd=='t' or cmd=='today':
+        #今日电脑使用日志
+        isTodayLogExists=os.path.exists('log/'+time.strftime("%Y-%m-%d", time.localtime(time.time()))+'.txt')
+        if(isTodayLogExists):
+            file=open('log/'+time.strftime("%Y-%m-%d", time.localtime(time.time()))+'.txt','r',encoding="utf-8")
+            print(file.read())
+            file.close()
+        else:
+            print("今日还未生成使用日志!")
+    elif cmd=='q' or cmd=='quit':
+        #保存后退出
+        now_time=int(time.time())
+        now_tuple=(last_path,last_text)
+        if now_tuple in datadict:
+            datadict.update({now_tuple:datadict[now_tuple]+(now_time-last_time)})
+        else:
+            datadict.update({now_tuple:now_time-last_time})
+        SaveData(datadict,last_time,now_time)
         break
+    else:
+        print("输入的命令不正确,请重新输入!")
 
 #win32process.TerminateProcess(handle,1)
 #ctypes.windll.user32.LockWorkStation()
