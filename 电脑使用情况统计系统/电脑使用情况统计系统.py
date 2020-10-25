@@ -16,7 +16,10 @@ def GetForegroundInfo():
         #数字超出2字节整型范围或小于0代表获取出错
         if pid >= 65535 or pid < 0:
             continue
-        handle=win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,False,pid) #进程句柄
+        try:
+            handle=win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,False,pid) #进程句柄
+        except:
+            continue
         path=win32process.GetModuleFileNameEx(handle,0) #进程路径
         #判断今天是否已结束
         time_now=time.localtime(time.time())
