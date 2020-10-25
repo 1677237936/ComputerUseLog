@@ -9,13 +9,14 @@ def GetForegroundInfo():
     #[进程路径,窗口标题,时长]
     while True:
         global last_text,last_path,last_time
+        win32gui.SetWindowText(me_hwnd,"电脑使用情况统计系统")
         hwnd=win32gui.GetForegroundWindow() #窗口句柄
         text=win32gui.GetWindowText(hwnd) #窗口标题
         _,pid=win32process.GetWindowThreadProcessId(hwnd) #进程标识符
         #数字超出2字节整型范围或小于0代表获取出错
         if pid >= 65535 or pid < 0:
             continue
-        handle=win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,False,pid) #进程句柄
+        handle=win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,False,pid) #进程句柄
         path=win32process.GetModuleFileNameEx(handle,0) #进程路径
         #判断今天是否已结束
         time_now=time.localtime(time.time())
@@ -42,6 +43,7 @@ def HotKeyShowWindow():
     while True:
         if win32api.GetAsyncKeyState(win32con.VK_LCONTROL) and win32api.GetAsyncKeyState(win32con.VK_F10):
             win32gui.ShowWindow(me_hwnd,win32con.SW_SHOW)
+            win32gui.SetActiveWindow(me_hwnd)
             break
         time.sleep(0.1)
 
@@ -83,7 +85,7 @@ else:
     file.write(str(datadict).encode("utf-8"))
     file.close()
 #开启子线程获取窗口信息
-t_getinfo=threading._start_new_thread(GetForegroundInfo)
+t_getinfo=threading._start_new_thread(GetForegroundInfo,())
 #输出提示信息
 print("——————基于Python的电脑使用情况统计系统——————")
 print("当前时间:"+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
@@ -100,7 +102,7 @@ while True:
         print("q/quit - 退出系统")
     elif cmd=='hide':
         #隐藏窗口
-        t_showwindow=threading._start_new_thread(HotKeyShowWindow)
+        t_showwindow=threading._start_new_thread(HotKeyShowWindow,())
         win32gui.ShowWindow(me_hwnd,win32con.SW_HIDE)
     elif cmd=='d' or cmd=='data':
         #排序后输出
