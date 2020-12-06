@@ -109,7 +109,6 @@ def IsDayEnd():
                 file=open('data/'+time.strftime("%Y-%m-%d", time.localtime(LastTime))+'.txt','wb')
                 file.write(str(TodayDict).encode("utf-8"))
                 file.close()
-
         time.sleep(1)
 
 def GetForegroundInfo(hwnd=0,type=0):
