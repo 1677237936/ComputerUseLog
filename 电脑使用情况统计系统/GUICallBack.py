@@ -6,6 +6,7 @@ import os
 
 #数据记录字典
 DataDict={}
+TodayDict={}
 #上次获取到的前台窗口信息
 LastTime=0
 LastHwnd=0
@@ -78,6 +79,39 @@ def HotKeyShowWindow(Hwnd):
             break
         time.sleep(0.1)
 
+def IsDayEnd():
+    """判断今天是否已结束，如果结束则写入文件并重置今日数据"""
+    #判断今天是否已结束
+    global LastTime,LastText,LastPath,DataDict,TodayDict
+    while True:
+        t=time.time()
+        TimeNow=time.localtime(t)
+        IsDayEnd=TimeNow[3]==23 and TimeNow[4]==59 and TimeNow[5]==59
+        if IsDayEnd:
+            NowTime=int(t)
+            NowTuple=(LastPath,LastText)
+            #总数据
+            if NowTuple in DataDict:
+                DataDict.update({NowTuple:DataDict[NowTuple]+(NowTime-LastTime)})
+            else:
+                DataDict.update({NowTuple:NowTime-LastTime})
+            #今日数据
+            if NowTuple in TodayDict:
+                TodayDict.update({NowTuple:TodayDict[NowTuple]+(NowTime-LastTime)})
+            else:
+                TodayDict.update({NowTuple:NowTime-LastTime})
+            SaveData(LastTime,NowTime)
+            #如果今天已结束则加一秒跳到第二天并重置今日数据
+            if IsDayEnd:
+                LastTime=NowTime+1
+                TodayDict={}
+                #建立第二天数据文件
+                file=open('data/'+time.strftime("%Y-%m-%d", time.localtime(LastTime))+'.txt','wb')
+                file.write(str(TodayDict).encode("utf-8"))
+                file.close()
+
+        time.sleep(1)
+
 def GetForegroundInfo(hwnd=0,type=0):
     """
     获取前台窗口信息
@@ -86,7 +120,7 @@ def GetForegroundInfo(hwnd=0,type=0):
                    1-首次获取
                    2-程序结束
     """
-    global LastTime,LastText,LastPath,DataDict
+    global LastTime,LastText,LastPath,DataDict,TodayDict
     if type==0:
         #运行期间
         #循环获取前台窗口信息直到获取成功
@@ -103,26 +137,25 @@ def GetForegroundInfo(hwnd=0,type=0):
                 continue
             Path=win32process.GetModuleFileNameEx(Handle,0) #进程路径
             break
-        #判断今天是否已结束
-        TimeNow=time.localtime(time.time())
-        IsDayEnd=TimeNow[3]==23 and TimeNow[4]==59 and TimeNow[5]==59
-        #如果和上次不同或今天已结束则写入文件
-        if (Text != LastText or Path !=LastPath) or IsDayEnd:
+        #如果和上次不同则写入文件
+        if Text != LastText or Path !=LastPath:
             NowTime=int(time.time())
             NowTuple=(LastPath,LastText)
+            #总数据
             if NowTuple in DataDict:
                 DataDict.update({NowTuple:DataDict[NowTuple]+(NowTime-LastTime)})
             else:
                 DataDict.update({NowTuple:NowTime-LastTime})
+            #今日数据
+            if NowTuple in TodayDict:
+                TodayDict.update({NowTuple:TodayDict[NowTuple]+(NowTime-LastTime)})
+            else:
+                TodayDict.update({NowTuple:NowTime-LastTime})
             SaveData(LastTime,NowTime)
             #更新上次数据
             LastText=Text
             LastPath=Path
-            #如果今天已结束则加一秒跳到第二天
-            if IsDayEnd:
-                LastTime=NowTime+1
-            else:
-                LastTime=NowTime
+            LastTime=NowTime
     elif type==1:
         #首次获取
         #初始化信息
@@ -132,35 +165,61 @@ def GetForegroundInfo(hwnd=0,type=0):
         _,Pid=win32process.GetWindowThreadProcessId(LastHwnd) #进程标识符
         Handle=win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,False,Pid) #进程句柄
         LastPath=win32process.GetModuleFileNameEx(Handle,0) #进程路径
-        #判断本地是否存在统计文件,不存在则创建
-        IsDataExists=os.path.exists('data.txt')
-        DataDict={}
+        #判断本地是否存在统计文件夹,不存在则创建
+        IsDataPathExists=os.path.exists('data')
+        if not IsDataPathExists:
+            os.mkdir("data")
+        #判断本地是否存在日志文件夹,不存在则创建
+        IsLogPathExists=os.path.exists('log')
+        if not IsLogPathExists:
+            os.mkdir("log")
+        #判断本地是否存在总统计文件,不存在则创建
+        IsDataExists=os.path.exists('data/data.txt')
         if(IsDataExists):
-            file=open('data.txt','rb')
+            file=open('data/data.txt','rb')
             DataDict=eval(file.read())
             file.close()
         else:
-            file=open('data.txt','wb')
+            file=open('data/data.txt','wb')
             file.write(str(DataDict).encode("utf-8"))
+            file.close()
+        #判断本地是否存在今日统计文件,不存在则创建
+        IsLogExists=os.path.exists('data/'+time.strftime("%Y-%m-%d", time.localtime())+'.txt')
+        if(IsLogExists):
+            file=open('data/'+time.strftime("%Y-%m-%d", time.localtime())+'.txt','rb')
+            TodayDict=eval(file.read())
+            file.close()
+        else:
+            file=open('data/'+time.strftime("%Y-%m-%d", time.localtime())+'.txt','wb')
+            file.write(str(TodayDict).encode("utf-8"))
             file.close()
     elif type==2:
         #程序结束
         NowTime=int(time.time())
         NowTuple=(LastPath,LastText)
+        #总数据
         if NowTuple in DataDict:
             DataDict.update({NowTuple:DataDict[NowTuple]+(NowTime-LastTime)})
         else:
             DataDict.update({NowTuple:NowTime-LastTime})
+        #今日数据
+        if NowTuple in TodayDict:
+            TodayDict.update({NowTuple:TodayDict[NowTuple]+(NowTime-LastTime)})
+        else:
+            TodayDict.update({NowTuple:NowTime-LastTime})
         SaveData(LastTime,NowTime)
 
 def SaveData(LastTime,NowTime):
     """将数据及日志写入文件"""
-    file=open('data.txt','wb')
+    #总数据
+    file=open('data/data.txt','wb')
     file.write(str(DataDict).encode("utf-8"))
     file.close()
-    IsPathExists=os.path.exists('log')
-    if not IsPathExists:
-        os.mkdir("log")
+    #今日数据
+    file=open('data/'+time.strftime("%Y-%m-%d", time.localtime(NowTime))+'.txt','wb')
+    file.write(str(TodayDict).encode("utf-8"))
+    file.close()
+    #日志
     file=open('log/'+time.strftime("%Y-%m-%d", time.localtime(NowTime))+'.txt','ab+')
     file.write(str(time.strftime("%H:%M:%S", time.localtime(LastTime))+" - "+time.strftime("%H:%M:%S", time.localtime(NowTime))+" : "+LastText+" "+LastPath+" 用时:"+str(NowTime-LastTime)+"s\n").encode("utf-8"))
     file.close()
