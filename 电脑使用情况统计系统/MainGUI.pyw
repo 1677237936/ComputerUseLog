@@ -4,8 +4,8 @@ import sys
 import os
 import threading
 from GUICallBack import *
-from H5Chart import *
 from ShellHook import *
+from ChartOptionGUI import *
 
 def GuiInit():
     #初始化pygame
@@ -20,12 +20,13 @@ def GuiInit():
     WindowHeight=661
     Window = pygame.display.set_mode((WindowWidth,WindowHeight),pygame.NOFRAME)
     pygame.display.set_caption("基于Python的电脑使用情况统计系统")
+    pygame.display.set_icon(pygame.image.load("Images/Icon.ico"))
     #获得窗口句柄
     MeHwnd=pygame.display.get_wm_info()["window"]
     #隐藏窗口
     win32gui.ShowWindow(MeHwnd,win32con.SW_HIDE)
-    #绘制窗口
-    BackgroundImage=pygame.image.load('Images/Back.jpg')
+    #绘制窗口背景
+    BackgroundImage=pygame.image.load("Images/Back.jpg")
     Window.blit(BackgroundImage,[0,0])
     pygame.display.flip()
     #窗口居中
@@ -44,6 +45,8 @@ def GuiInit():
         pygame.time.delay(4)
     #初始化信息
     GetForegroundInfo(MeHwnd,1)
+    #开启检测今日是否结束线程
+    tDayEnd=threading._start_new_thread(IsDayEnd,())
     #开启窗口消息钩子
     StartHook(MeHwnd)
 
@@ -83,10 +86,12 @@ def GuiInit():
                             pass
                         #统计视图
                         elif BtnStatus.index(True)==2:
-                            tChart=threading._start_new_thread(ShowChart,())
+                            #主线程
                             #while win32api.ShowCursor(True)<0:
                             #    win32api.ShowCursor(True)
                             #ShowChart()
+                            #子线程
+                            tChart=threading._start_new_thread(ShowChart,())
                         #周报月报
                         elif BtnStatus.index(True)==3:
                             pass
