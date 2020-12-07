@@ -91,7 +91,7 @@ def GuiInit():
                             #    win32api.ShowCursor(True)
                             #ShowChart()
                             #子线程
-                            tChart=threading._start_new_thread(ShowChart,())
+                            tChart=threading._start_new_thread(ShowChartOptionGUI,())
                         #周报月报
                         elif BtnStatus.index(True)==3:
                             pass

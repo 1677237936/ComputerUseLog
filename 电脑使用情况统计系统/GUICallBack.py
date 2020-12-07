@@ -222,3 +222,24 @@ def SaveData(LastTime,NowTime):
     file=open('log/'+time.strftime("%Y-%m-%d", time.localtime(NowTime))+'.txt','ab+')
     file.write(str(time.strftime("%H:%M:%S", time.localtime(LastTime))+" - "+time.strftime("%H:%M:%S", time.localtime(NowTime))+" : "+LastText+" "+LastPath+" 用时:"+str(NowTime-LastTime)+"s\n").encode("utf-8"))
     file.close()
+
+def OutputHtml(type,view,data):
+    """根据绘图选项生成统计图html"""
+    if type=="柱形图":
+        if view=="日视图":
+            pass
+        elif view=="周视图":
+            pass
+        elif view=="月视图":
+            pass
+        elif view=="总视图":
+            pass
+    elif type=="饼图":
+        if view=="日视图":
+            pass
+        elif view=="周视图":
+            pass
+        elif view=="月视图":
+            pass
+        elif view=="总视图":
+            pass

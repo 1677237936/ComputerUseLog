@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter.font import Font
 from tkinter.ttk import *
 from tkinter.messagebox import *
+from GUICallBack import OutputHtml
 #import tkinter.filedialog as tkFileDialog
 #import tkinter.simpledialog as tkSimpleDialog    #askstring()
 
@@ -88,15 +89,13 @@ class ChartOption_callback(ChartOption_ui):
     def CmdSubmit_Cmd(self, event=None):
         #根据本地数据生成html
 
-        print(self.ComboType.text())
-        print(self.ComboView.text())
-        print(self.ComboFilter.text())
+        OutputHtml(self.ComboType.text(),self.ComboView.text())
 
     def EV_WM_DELETE_WINDOW(self, event=None):
         #窗口退出消息
         self.master.destroy()
 
-def ShowChart():
+def ShowChartOptionGUI():
     top = Tk()
     top.attributes("-topmost", True)
     top.iconbitmap("Images/Icon.ico")
