@@ -100,7 +100,7 @@ def GuiInit():
                             while win32api.ShowCursor(True)<0:
                                 win32api.ShowCursor(True)
                             win32api.MessageBox(0,"提示:按下Ctrl+F10可以重新显示窗口","隐藏窗口",win32con.MB_OK | win32con.MB_ICONINFORMATION | win32con.MB_TOPMOST,0)
-                            t_showwindow=threading._start_new_thread(HotKeyShowWindow,(MeHwnd,))
+                            tShowWindow=threading._start_new_thread(HotKeyShowWindow,(MeHwnd,))
                         #超时提醒
                         elif BtnStatus.index(True)==5:
                             pass

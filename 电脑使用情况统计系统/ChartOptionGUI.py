@@ -42,7 +42,7 @@ class ChartOption_ui(Frame):
         self.ComboFilter = Combobox(self.FrameMain, state='readonly', text='前10', textvariable=self.ComboFilterVar, values=self.ComboFilterList, font=('微软雅黑',10))
         self.ComboFilter.setText = lambda x: self.ComboFilterVar.set(x)
         self.ComboFilter.text = lambda : self.ComboFilterVar.get()
-        self.ComboFilter.place(relx=0.650, rely=0.283, relwidth=0.267)
+        self.ComboFilter.place(relx=0.650, rely=0.173, relwidth=0.267)
 
         self.ComboViewList = ['日视图','周视图','月视图','总视图']
         self.ComboViewVar = StringVar(value='日视图')
@@ -56,14 +56,14 @@ class ChartOption_ui(Frame):
         self.ComboType = Combobox(self.FrameMain, state='readonly', text='柱形图', textvariable=self.ComboTypeVar, values=self.ComboTypeList, font=('微软雅黑',10))
         self.ComboType.setText = lambda x: self.ComboTypeVar.set(x)
         self.ComboType.text = lambda : self.ComboTypeVar.get()
-        self.ComboType.place(relx=0.196, rely=0.283, relwidth=0.267)
+        self.ComboType.place(relx=0.196, rely=0.173, relwidth=0.267)
 
         self.LblFilterVar = StringVar(value='筛选:')
         self.style.configure('TLblFilter.TLabel', anchor='w', background='#FFE0C0', font=('微软雅黑',10))
         self.LblFilter = Label(self.FrameMain, text='筛选:', textvariable=self.LblFilterVar, style='TLblFilter.TLabel')
         self.LblFilter.setText = lambda x: self.LblFilterVar.set(x)
         self.LblFilter.text = lambda : self.LblFilterVar.get()
-        self.LblFilter.place(relx=0.558, rely=0.303, relwidth=0.090, relheight=0.175)
+        self.LblFilter.place(relx=0.558, rely=0.193, relwidth=0.090, relheight=0.175)
 
         self.LblViewVar = StringVar(value='视图类型:')
         self.style.configure('TLblView.TLabel', anchor='w', background='#FFE0C0', font=('微软雅黑',10))
@@ -77,7 +77,7 @@ class ChartOption_ui(Frame):
         self.LblType = Label(self.FrameMain, text='图表类型:', textvariable=self.LblTypeVar, style='TLblType.TLabel')
         self.LblType.setText = lambda x: self.LblTypeVar.set(x)
         self.LblType.text = lambda : self.LblTypeVar.get()
-        self.LblType.place(relx=0.04, rely=0.303, relwidth=0.150, relheight=0.175)
+        self.LblType.place(relx=0.04, rely=0.193, relwidth=0.150, relheight=0.175)
 
 
 class ChartOption_callback(ChartOption_ui):
@@ -87,7 +87,10 @@ class ChartOption_callback(ChartOption_ui):
 
     def CmdSubmit_Cmd(self, event=None):
         #根据本地数据生成html
-        print(123)
+
+        print(self.ComboType.text())
+        print(self.ComboView.text())
+        print(self.ComboFilter.text())
 
     def EV_WM_DELETE_WINDOW(self, event=None):
         #窗口退出消息
@@ -96,5 +99,6 @@ class ChartOption_callback(ChartOption_ui):
 def ShowChart():
     top = Tk()
     top.attributes("-topmost", True)
+    top.iconbitmap("Images/Icon.ico")
     ChartOption_callback(top).mainloop()
 
