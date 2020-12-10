@@ -2,6 +2,8 @@ import win32api,win32gui,win32con,win32process
 import pygame
 import ctypes
 import time
+import datetime
+import calendar
 import os
 
 #数据记录字典
@@ -223,23 +225,104 @@ def SaveData(LastTime,NowTime):
     file.write(str(time.strftime("%H:%M:%S", time.localtime(LastTime))+" - "+time.strftime("%H:%M:%S", time.localtime(NowTime))+" : "+LastText+" "+LastPath+" 用时:"+str(NowTime-LastTime)+"s\n").encode("utf-8"))
     file.close()
 
-def OutputHtml(type,view,data):
-    """根据绘图选项生成统计图html"""
+def OutputHtml(type,view,filter,date):
+    """
+    根据绘图选项生成统计图html
+    type:图表类型-柱形图,饼图
+    view:视图类型-日视图,周视图,月视图,总视图
+    filter:筛选-10,20,30
+    date:要生成视图的日期
+    """
+    #检验日期合法性
+    if view=="日视图":
+        #判断是否存在当日统计数据
+        IsDataExists=os.path.exists('data/'+ date +'.txt')
+        if not IsDataExists:
+            win32api.MessageBox(0,"日期 "+ date + " 的统计数据不存在!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+            return -1
+    elif view=="周视图":
+        try:
+            #查找周一
+            InputDateTimeTuple=datetime.datetime.strptime(date,"%Y-%m-%d")
+            InputTimeTuple=time.strptime(date,"%Y-%m-%d")
+            MondayDelta=datetime.timedelta(days=0-calendar.weekday(InputTimeTuple[0],InputTimeTuple[1],InputTimeTuple[2]))
+            MondayDateTimeTuple=InputDateTimeTuple+MondayDelta
+            #循环插入列表
+            DateList=[]
+            Delta=datetime.timedelta(days=1)
+            for i in range(7):
+                CurrentDateTimeTuple=MondayDateTimeTuple.strftime("%Y-%m-%d")
+                DateList.append(CurrentDateTimeTuple)
+                MondayDateTimeTuple=MondayDateTimeTuple+Delta
+            #检验当周的统计数据是否全不存在
+            IsAllNotExists=True
+            for i in DateList:
+                if os.path.exists('data/'+ i +'.txt'):
+                    IsAllNotExists=False
+                    break
+            if IsAllNotExists:
+                win32api.MessageBox(0,"所选日期 "+ date + " 所属的周("+ DateList[0] + " ~ " + DateList[-1] +")无统计数据!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+                return -1
+        except:
+            win32api.MessageBox(0,"输入的日期 "+ date + " 不正确!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+            return -1
+    elif view=="月视图":
+        #检验当月的统计数据是否全不存在
+        IsAllNotExists=True
+        for i in range(1,32):
+            if os.path.exists('data/'+ date + '-' + str(i).zfill(2) + '.txt'):
+                IsAllNotExists=False
+                break
+        if IsAllNotExists:
+            win32api.MessageBox(0,"所选月份 "+ date + " 中无统计数据!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+            return -1
+    #读取数据
+    ChartDict={}
+    if view=="日视图":
+        file=open('data/'+ date +'.txt','rb')
+        ChartDict=eval(file.read())
+        file.close()
+    elif view=="周视图":
+        for i in DateList:
+            if os.path.exists('data/'+ i +'.txt'):
+                file=open('data/'+ i +'.txt','rb')
+                TempDict=eval(file.read())
+                file.close()
+                for j in TempDict.keys():
+                    if j in ChartDict:
+                        ChartDict.update({j:ChartDict[j]+TempDict[j]})
+                    else:
+                        ChartDict.update({j:TempDict[j]})
+    elif view=="月视图":
+        for i in range(1,32):
+            if os.path.exists('data/'+ date + '-' + str(i).zfill(2) + '.txt'):
+                file=open('data/'+ date + '-' + str(i).zfill(2) + '.txt','rb')
+                TempDict=eval(file.read())
+                file.close()
+                for j in TempDict.keys():
+                    if j in ChartDict:
+                        ChartDict.update({j:ChartDict[j]+TempDict[j]})
+                    else:
+                        ChartDict.update({j:TempDict[j]})
+    elif view=="总视图":
+        global DataDict
+        ChartDict=DataDict.copy()
+    #排序数据
+    ZippedDict=zip(ChartDict.values(),ChartDict.keys())
+    SortedDataList=list(sorted(ZippedDict,key=lambda s: s[0], reverse=True))
+    for i in SortedDataList:
+        print("总时长:"+str(i[0])+"s 应用:"+i[1][1]+" 进程路径:"+i[1][0])
+    #筛选数据
+    if view=="日视图":
+        pass
+    elif view=="周视图":
+        pass
+    elif view=="月视图":
+        pass
+    elif view=="总视图":
+        pass
+    #生成html
     if type=="柱形图":
-        if view=="日视图":
-            pass
-        elif view=="周视图":
-            pass
-        elif view=="月视图":
-            pass
-        elif view=="总视图":
-            pass
+        pass
     elif type=="饼图":
-        if view=="日视图":
-            pass
-        elif view=="周视图":
-            pass
-        elif view=="月视图":
-            pass
-        elif view=="总视图":
-            pass
+        pass
