@@ -187,14 +187,11 @@ class ChartOption_callback(ChartOption_ui):
         if Result!=-1:
             self.master.destroy()
 
-    def EV_WM_DELETE_WINDOW(self, event=None):
-        #窗口退出消息
-        self.master.destroy()
-
 def ShowChartOptionGUI():
     #初始化
     top = Tk()
     #加载窗口图标
     top.iconbitmap("Images/Icon.ico")
     ChartOption_callback(top).mainloop()
+    top.quit()
 

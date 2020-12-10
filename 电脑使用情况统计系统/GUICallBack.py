@@ -310,19 +310,124 @@ def OutputHtml(type,view,filter,date):
     #排序数据
     ZippedDict=zip(ChartDict.values(),ChartDict.keys())
     SortedDataList=list(sorted(ZippedDict,key=lambda s: s[0], reverse=True))
-    for i in SortedDataList:
-        print("总时长:"+str(i[0])+"s 应用:"+i[1][1]+" 进程路径:"+i[1][0])
-    #筛选数据
-    if view=="日视图":
-        pass
-    elif view=="周视图":
-        pass
-    elif view=="月视图":
-        pass
-    elif view=="总视图":
-        pass
     #生成html
     if type=="柱形图":
-        pass
+        #筛选数据
+        FilterList=reversed(SortedDataList[:filter])
+        NameList=[]
+        TimeList=[]
+        for i in FilterList:
+            NameList.append("'" + i[1][1] + "'")
+            TimeList.append(str(i[0]))
+        #写入文件
+        file=open('chart.html','wb')
+        file.write(str("""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ECharts">
+<title>""" + view + " - 基于Python的电脑使用情况统计系统" + """</title>
+<script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 1200px;height:""" + str(filter*60) + """px;"></div>
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+    var category = [""" + ", ".join(NameList) + """];
+    var barData = [""" + ", ".join(TimeList) + """];
+ 
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'value',
+            axisLine: {
+                show: false
+            },
+            axisTick: {
+                show: false
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: category,
+            splitLine: {show: false},
+            axisLine: {
+                show: false
+            },
+            axisTick: {
+                show: false
+            },
+            offset: 10,
+            nameTextStyle: {
+                fontSize: 15
+            },
+			axisLabel:{
+			formatter: function (value) {
+			  var maxlength=10;
+			  if (value.length>=maxlength) {
+			  return value.substring(0, maxlength-1)+'...';
+			  } else{
+			  return value;
+			  };
+			  }
+			}
+        },
+        series: [
+            {
+                name: '时间',
+                type: 'bar',
+                data: barData,
+                barWidth: 14,
+                barGap: 10,
+                smooth: true,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'right',
+                        offset: [5, -2],
+                        textStyle: {
+                            color: '#F68300',
+                            fontSize: 13
+                        }
+                    }
+                },
+                itemStyle: {
+                    emphasis: {
+                        barBorderRadius: 7
+                    },
+                    normal: {
+                        barBorderRadius: 7,
+                        color: new echarts.graphic.LinearGradient(
+                            0, 0, 1, 0,
+                            [
+                                {offset: 0, color: '#3977E6'},
+                                {offset: 1, color: '#37BBF8'}
+ 
+                            ]
+                        )
+                    }
+                }
+            }
+        ]
+    };
+    myChart.setOption(option);
+</script>
+</body>
+</html>""").encode("utf-8"))
+        file.close()
+        win32api.ShellExecute(0,"open","Chart.exe",None,os.getcwd(),1)
     elif type=="饼图":
         pass

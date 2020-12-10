@@ -87,11 +87,13 @@ def GuiInit():
                         #统计视图
                         elif BtnStatus.index(True)==2:
                             #主线程
-                            #while win32api.ShowCursor(True)<0:
-                            #    win32api.ShowCursor(True)
-                            #ShowChart()
+                            win32gui.EnableWindow(MeHwnd,False)
+                            while win32api.ShowCursor(True)<0:
+                                win32api.ShowCursor(True)
+                            ShowChartOptionGUI()
+                            win32gui.EnableWindow(MeHwnd,True)
                             #子线程
-                            tChart=threading._start_new_thread(ShowChartOptionGUI,())
+                            #tChart=threading._start_new_thread(ShowChartOptionGUI,())
                         #周报月报
                         elif BtnStatus.index(True)==3:
                             pass
