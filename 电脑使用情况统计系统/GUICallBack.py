@@ -317,7 +317,7 @@ def OutputHtml(type,view,filter,date):
         NameList=[]
         TimeList=[]
         for i in FilterList:
-            NameList.append("'" + i[1][1] + "'")
+            NameList.append("'" + i[1][1].replace("\\","\\\\") + "'")
             TimeList.append(str(i[0]))
         #写入文件
         file=open('chart.html','wb')
@@ -325,6 +325,7 @@ def OutputHtml(type,view,filter,date):
 <html>
 <head>
 <meta charset="utf-8">
+<link href="Images/Icon.ico" rel="icon" type="image/x-icon" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="ECharts">
@@ -377,7 +378,7 @@ def OutputHtml(type,view,filter,date):
 			axisLabel:{
 			formatter: function (value) {
 			  var maxlength=10;
-			  if (value.length>=maxlength) {
+			  if (value.length>maxlength) {
 			  return value.substring(0, maxlength-1)+'...';
 			  } else{
 			  return value;
@@ -387,7 +388,7 @@ def OutputHtml(type,view,filter,date):
         },
         series: [
             {
-                name: '时间',
+                name: '时间(秒)',
                 type: 'bar',
                 data: barData,
                 barWidth: 14,
@@ -401,7 +402,8 @@ def OutputHtml(type,view,filter,date):
                         textStyle: {
                             color: '#F68300',
                             fontSize: 13
-                        }
+                        },
+					formatter: '{c} 秒'
                     }
                 },
                 itemStyle: {
@@ -428,6 +430,53 @@ def OutputHtml(type,view,filter,date):
 </body>
 </html>""").encode("utf-8"))
         file.close()
+        #显示
         win32api.ShellExecute(0,"open","Chart.exe",None,os.getcwd(),1)
     elif type=="饼图":
-        pass
+        #筛选数据
+        FilterList=SortedDataList[:filter]
+        FilterDict={}
+        FilterStr=""
+        for i in FilterList:
+            FilterDict.update({"value":i[0],"name":i[1][1].replace("\\","\\\\")})
+            FilterStr=FilterStr+str(FilterDict)+","
+        FilterStr.rstrip(",")
+        #写入文件
+        file=open('chart.html','wb')
+        file.write(str("""<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="Images/Icon.ico" rel="icon" type="image/x-icon" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ECharts">
+<title>""" + view + " - 基于Python的电脑使用情况统计系统" + """</title>
+<script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+</head>
+<body>
+<div id="main" style="width: 1200px;height:""" + str(filter*60) + """px;"></div>
+<script type="text/javascript">
+    var myChart = echarts.init(document.getElementById('main'));
+ 
+    var myChart = echarts.init(document.getElementById("main"));
+ 
+		myChart.setOption({
+			title: {
+				text: "ECharts饼图Demo"
+			},
+			series : [
+				{
+					name: "访问来源",
+					type: "pie",
+					radius: "55%",
+					data:[""" + FilterStr + """]
+				}
+			]
+		})
+</script>
+</body>
+</html>""").encode("utf-8"))
+        file.close()
+        #显示
+        win32api.ShellExecute(0,"open","Chart.exe",None,os.getcwd(),1)
