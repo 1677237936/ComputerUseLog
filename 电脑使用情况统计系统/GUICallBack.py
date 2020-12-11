@@ -4,6 +4,7 @@ import ctypes
 import time
 import datetime
 import calendar
+import re
 import os
 
 #数据记录字典
@@ -234,6 +235,15 @@ def OutputHtml(type,view,filter,date):
     date:要生成视图的日期
     """
     #检验日期合法性
+    if view=="日视图" or view=="周视图":
+        if re.match("^\d{4}-\d{2}-\d{2}$",date)==None:
+            win32api.MessageBox(0,"输入的日期数据格式不正确!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+            return -1
+    elif view=="月视图":
+        if re.match("^\d{4}-\d{2}$",date)==None:
+            win32api.MessageBox(0,"输入的日期数据格式不正确!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+            return -1
+    #判断统计文件是否存在
     if view=="日视图":
         #判断是否存在当日统计数据
         IsDataExists=os.path.exists('data/'+ date +'.txt')
@@ -310,6 +320,13 @@ def OutputHtml(type,view,filter,date):
     #排序数据
     ZippedDict=zip(ChartDict.values(),ChartDict.keys())
     SortedDataList=list(sorted(ZippedDict,key=lambda s: s[0], reverse=True))
+    #标题字符串
+    if view=="日视图" or view=="月视图":
+        TitleStr=view + "(" + date + ") - 基于Python的电脑使用情况统计系统(Top " + str(filter) +")"
+    elif view=="周视图":
+        TitleStr=view + "(" + DateList[0] + " ~ " + DateList[-1] + ") - 基于Python的电脑使用情况统计系统(Top " + str(filter) +")"
+    elif view=="总视图":
+        TitleStr=view + " - 基于Python的电脑使用情况统计系统(Top " + str(filter) +")"
     #生成html
     if type=="柱形图":
         #筛选数据
@@ -329,8 +346,8 @@ def OutputHtml(type,view,filter,date):
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="ECharts">
-<title>""" + view + " - 基于Python的电脑使用情况统计系统" + """</title>
-<script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+<title>""" + TitleStr + """</title>
+<script src="echarts.js"></script>
 </head>
 <body>
 <div id="main" style="width: 1200px;height:""" + str(filter*60) + """px;"></div>
@@ -340,6 +357,9 @@ def OutputHtml(type,view,filter,date):
     var barData = [""" + ", ".join(TimeList) + """];
  
     var option = {
+        title: {
+				text: " """ + TitleStr + """ "
+			},
         tooltip: {
             trigger: 'axis',
             axisPointer: {
@@ -451,11 +471,11 @@ def OutputHtml(type,view,filter,date):
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="ECharts">
-<title>""" + view + " - 基于Python的电脑使用情况统计系统" + """</title>
-<script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+<title>""" + TitleStr + """</title>
+<script src="echarts.js"></script>
 </head>
 <body>
-<div id="main" style="width: 1200px;height:""" + str(filter*60) + """px;"></div>
+<div id="main" style="width: 1200px;height: 800px;"></div>
 <script type="text/javascript">
     var myChart = echarts.init(document.getElementById('main'));
  
@@ -463,11 +483,11 @@ def OutputHtml(type,view,filter,date):
  
 		myChart.setOption({
 			title: {
-				text: "ECharts饼图Demo"
+				text: " """ + TitleStr + """ "
 			},
 			series : [
 				{
-					name: "访问来源",
+					name: "时间",
 					type: "pie",
 					radius: "55%",
 					data:[""" + FilterStr + """]
