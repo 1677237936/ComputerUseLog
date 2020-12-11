@@ -29,9 +29,6 @@
     <Compile Include="GUICallBack.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="H5Chart.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="MainGUI.pyw">
       <SubType>Code</SubType>
     </Compile>
