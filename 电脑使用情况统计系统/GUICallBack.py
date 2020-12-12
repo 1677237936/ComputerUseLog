@@ -399,11 +399,11 @@ def OutputHtml(type,view,filter,date):
 			formatter: function (value) {
 			  var maxlength=10;
 			  if (value.length>maxlength) {
-			  return value.substring(0, maxlength-1)+'...';
-			  } else{
-			  return value;
-			  };
-			  }
+			      return value.substring(0, maxlength-1)+'...';
+			      } else{
+			      return value;
+			      };
+			      }
 			}
         },
         series: [
@@ -458,9 +458,14 @@ def OutputHtml(type,view,filter,date):
         FilterDict={}
         FilterStr=""
         for i in FilterList:
-            FilterDict.update({"value":i[0],"name":i[1][1].replace("\\","\\\\")})
+            FilterDict.update({"value":i[0],"name":i[1][1]})
             FilterStr=FilterStr+str(FilterDict)+","
-        FilterStr.rstrip(",")
+        #计算其他程序时间
+        OtherList=SortedDataList[filter:]
+        OtherTime=0
+        for i in OtherList:
+            OtherTime=OtherTime+i[0]
+        FilterStr=FilterStr + "{'value': " + str(OtherTime) + ", 'name': '其他'}"
         #写入文件
         file=open('chart.html','wb')
         file.write(str("""<!DOCTYPE html>
@@ -475,22 +480,38 @@ def OutputHtml(type,view,filter,date):
 <script src="echarts.js"></script>
 </head>
 <body>
-<div id="main" style="width: 1200px;height: 800px;"></div>
+<div id="main" style="width: 1200px;height: 700px;"></div>
 <script type="text/javascript">
     var myChart = echarts.init(document.getElementById('main'));
- 
-    var myChart = echarts.init(document.getElementById("main"));
  
 		myChart.setOption({
 			title: {
 				text: " """ + TitleStr + """ "
 			},
+			tooltip: {
+				trigger: 'item',
+				formatter: "{b} <br />{a} : {c} ({d}%)"
+			},
 			series : [
 				{
-					name: "时间",
+					name: "时间(秒)",
 					type: "pie",
 					radius: "55%",
-					data:[""" + FilterStr + """]
+					data:[""" + FilterStr + """],
+					itemStyle: {
+						emphasis: {
+							shadowBlur: 10,
+							shadowOffsetX: 0,
+							shadowColor: 'rgba(0, 0, 0, 0.5)'
+						},
+						normal:{ 
+							label:{ 
+								show: true, 
+								formatter: '{b} : {c} ({d}%)' 
+							}, 
+							labelLine :{show:true} 
+						} 
+					}
 				}
 			]
 		})
