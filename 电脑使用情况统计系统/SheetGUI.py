@@ -14,6 +14,8 @@ def ShowSheetDataGUI(DataDict):
     x = (ws / 2) - (1100 / 2)
     y = (hs / 2) - (600 / 2)
     top.geometry('%dx%d+%d+%d' % (1100,600,x,y))
+    #禁止窗口改变大小
+    top.resizable(0,0)
 
     #表格
     columns = ("时长(秒)", "窗口标题", "进程路径")
