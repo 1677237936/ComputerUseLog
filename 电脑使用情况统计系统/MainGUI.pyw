@@ -6,6 +6,7 @@ import threading
 from GUICallBack import *
 from ShellHook import *
 from ChartOptionGUI import *
+from SheetGUI import *
 
 def GuiInit():
     #初始化pygame
@@ -80,7 +81,11 @@ def GuiInit():
                     if True in BtnStatus:
                         #数据汇总
                         if BtnStatus.index(True)==0:
-                            pass
+                            win32gui.EnableWindow(MeHwnd,False)
+                            while win32api.ShowCursor(True)<0:
+                                win32api.ShowCursor(True)
+                            SheetDataGUI()
+                            win32gui.EnableWindow(MeHwnd,True)
                         #今日数据
                         elif BtnStatus.index(True)==1:
                             pass

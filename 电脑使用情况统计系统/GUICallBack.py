@@ -6,6 +6,7 @@ import datetime
 import calendar
 import re
 import os
+from SheetGUI import *
 
 #数据记录字典
 DataDict={}
@@ -525,3 +526,8 @@ def OutputHtml(type,view,filter,date):
         pass
     elif type=="旭日图":
         pass
+
+def SheetDataGUI():
+    """显示数据汇总窗口"""
+    global DataDict
+    ShowSheetDataGUI(DataDict)
