@@ -500,7 +500,7 @@ def OutputHtml(type,view,filter,date):
 					data:[""" + FilterStr + """],
 					itemStyle: {
 						emphasis: {
-							shadowBlur: 10,
+							shadowBlur: 200,
 							shadowOffsetX: 0,
 							shadowColor: 'rgba(0, 0, 0, 0.5)'
 						},
@@ -521,3 +521,7 @@ def OutputHtml(type,view,filter,date):
         file.close()
         #显示
         win32api.ShellExecute(0,"open","Chart.exe",None,os.getcwd(),1)
+    elif type=="雷达图":
+        pass
+    elif type=="旭日图":
+        pass
