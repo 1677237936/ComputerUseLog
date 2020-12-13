@@ -13,9 +13,9 @@ def ShowSheetDataGUI(DataDict):
     # 窗口居中
     ws = top.winfo_screenwidth()
     hs = top.winfo_screenheight()
-    x = (ws / 2) - (1100 / 2)
+    x = (ws / 2) - (1125 / 2)
     y = (hs / 2) - (600 / 2)
-    top.geometry('%dx%d+%d+%d' % (1100,600,x,y))
+    top.geometry('%dx%d+%d+%d' % (1125,600,x,y))
     #禁止窗口改变大小
     top.resizable(0,0)
 
@@ -40,6 +40,10 @@ def ShowSheetDataGUI(DataDict):
     for i in SortedDataList:
         treeview.insert("",count,values=(i[0],i[1][1],i[1][0]))
         count=count+1
+    #添加滚动条
+    VScroll = Scrollbar(top, orient='vertical', command=treeview.yview)
+    VScroll.place(relx=0.980, rely=0.0, relwidth=0.020, relheight=1.0)
+    treeview.configure(yscrollcommand=VScroll.set)
     #运行
     top.mainloop()
     top.quit()
@@ -88,6 +92,10 @@ def ShowSheetLogGUI():
         Long=(re.search(r"用时:\d*",Detail).group())[3:]
         treeview.insert("",count,values=(Time,Long,Name,Path))
         count=count+1
+    #添加滚动条
+    VScroll = Scrollbar(top, orient='vertical', command=treeview.yview)
+    VScroll.place(relx=0.980, rely=0.0, relwidth=0.020, relheight=1.0)
+    treeview.configure(yscrollcommand=VScroll.set)
     #运行
     top.mainloop()
     top.quit()
