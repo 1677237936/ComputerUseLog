@@ -88,7 +88,11 @@ def GuiInit():
                             win32gui.EnableWindow(MeHwnd,True)
                         #今日数据
                         elif BtnStatus.index(True)==1:
-                            pass
+                            win32gui.EnableWindow(MeHwnd,False)
+                            while win32api.ShowCursor(True)<0:
+                                win32api.ShowCursor(True)
+                            ShowSheetLogGUI()
+                            win32gui.EnableWindow(MeHwnd,True)
                         #统计视图
                         elif BtnStatus.index(True)==2:
                             #主线程

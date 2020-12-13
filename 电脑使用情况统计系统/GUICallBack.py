@@ -237,11 +237,11 @@ def OutputHtml(type,view,filter,date):
     """
     #检验日期合法性
     if view=="日视图" or view=="周视图":
-        if re.match("^\d{4}-\d{2}-\d{2}$",date)==None:
+        if re.match(r"^\d{4}-\d{2}-\d{2}$",date)==None:
             win32api.MessageBox(0,"输入的日期数据格式不正确!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
             return -1
     elif view=="月视图":
-        if re.match("^\d{4}-\d{2}$",date)==None:
+        if re.match(r"^\d{4}-\d{2}$",date)==None:
             win32api.MessageBox(0,"输入的日期数据格式不正确!","统计视图",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
             return -1
     #判断统计文件是否存在
