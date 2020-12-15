@@ -7,6 +7,7 @@ from GUICallBack import *
 from ShellHook import *
 from ChartOptionGUI import *
 from SheetGUI import *
+from RemindGUI import *
 
 def GuiInit():
     #初始化pygame
@@ -95,14 +96,11 @@ def GuiInit():
                             win32gui.EnableWindow(MeHwnd,True)
                         #统计视图
                         elif BtnStatus.index(True)==2:
-                            #主线程
                             win32gui.EnableWindow(MeHwnd,False)
                             while win32api.ShowCursor(True)<0:
                                 win32api.ShowCursor(True)
                             ShowChartOptionGUI()
                             win32gui.EnableWindow(MeHwnd,True)
-                            #子线程
-                            #tChart=threading._start_new_thread(ShowChartOptionGUI,())
                         #周报月报
                         elif BtnStatus.index(True)==3:
                             pass
@@ -114,7 +112,11 @@ def GuiInit():
                             tShowWindow=threading._start_new_thread(HotKeyShowWindow,(MeHwnd,))
                         #超时提醒
                         elif BtnStatus.index(True)==5:
-                            pass
+                            win32gui.EnableWindow(MeHwnd,False)
+                            while win32api.ShowCursor(True)<0:
+                                win32api.ShowCursor(True)
+                            ShowRemindGUI()
+                            win32gui.EnableWindow(MeHwnd,True)
                         #系统设置
                         elif BtnStatus.index(True)==6:
                             pass

@@ -194,4 +194,3 @@ def ShowChartOptionGUI():
     top.iconbitmap("Images/Icon.ico")
     ChartOption_callback(top).mainloop()
     top.quit()
-

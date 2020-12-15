@@ -6,6 +6,7 @@ import datetime
 import calendar
 import re
 import os
+import threading
 from SheetGUI import *
 
 #数据记录字典
@@ -16,6 +17,13 @@ LastTime=0
 LastHwnd=0
 LastText=''
 LastPath=''
+#超时提醒状态信息
+RemindStatus=False
+RemindThread=None
+RemindPath=""
+RemindTime=0
+RemindType=""
+ExitFlag=False
 #按钮样式变量
 BtnStatus=[]
 for i in range(10):
@@ -531,3 +539,81 @@ def SheetDataGUI():
     """显示数据汇总窗口"""
     global DataDict
     ShowSheetDataGUI(DataDict)
+
+def GetRemindStatus():
+    """获取超时提醒运行状态"""
+    global RemindStatus,RemindPath,RemindTime,RemindType
+    return (RemindStatus,RemindPath,RemindTime,RemindType)
+
+def StartRemind(path,time,type):
+    """开启超时提醒检测"""
+    global RemindStatus,RemindPath,RemindTime,RemindType,RemindThread,ExitFlag
+    ExitFlag=False
+    RemindStatus=True
+    RemindPath=path
+    RemindTime=time
+    RemindType=type
+    RemindThread=threading.Thread(target=Remind,args=((path).lower(),time,type))
+    RemindThread.start()
+    
+def Remind(path,ttime,type):
+    """超时提醒检测"""
+    global ExitFlag
+    RunTime=0
+    Pid=-1
+    while True:
+        #判断退出标志
+        if ExitFlag:
+            return
+        #获取进程pid列表
+        ProcessTuple=win32process.EnumProcesses()
+        #判断是否存在已知的对应pid
+        if Pid==-1:
+            #不存在已知pid则遍历查找路径
+            for i in ProcessTuple:
+                try:
+                    Handle=win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,False,i)
+                    Path=(win32process.GetModuleFileNameEx(Handle,0)).lower()
+                    if Path==path:
+                        Pid=i
+                        RunTime=RunTime+1
+                except:
+                    pass
+        else:
+            #存在已知pid则直接查找元组
+            if Pid in ProcessTuple:
+                RunTime=RunTime+1
+            else:
+                Pid=-1
+                for i in ProcessTuple:
+                    try:
+                        Handle=win32api.OpenProcess(win32con.PROCESS_QUERY_INFORMATION,False,i)
+                        Path=(win32process.GetModuleFileNameEx(Handle,0)).lower()
+                        if Path==path:
+                            Pid=i
+                            RunTime=RunTime+1
+                    except:
+                        pass
+        if RunTime>=ttime:
+            if type=="弹窗":
+                win32api.MessageBox(0,"设定的提醒时间已到!","超时提醒",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
+            elif type=="结束进程":
+                try:
+                    Handle=win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,False,Pid)
+                    win32process.TerminateProcess(Handle,0)
+                except:
+                    win32api.ShellExecute(0,"open","taskkill","/f /im " + path.split("\\")[-1],os.getcwd(),0)
+            elif type=="关机":
+                win32api.ShellExecute(0,"open","shutdown","-s -t 0",os.getcwd(),0)
+            break
+        time.sleep(1)
+    StopRemind()
+
+def StopRemind():
+    """停止超时提醒检测"""
+    global RemindStatus,RemindPath,RemindTime,RemindType,RemindThread,ExitFlag
+    ExitFlag=True
+    RemindStatus=False
+    RemindPath=""
+    RemindTime=0
+    RemindType=""

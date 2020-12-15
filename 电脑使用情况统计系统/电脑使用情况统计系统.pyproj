@@ -32,6 +32,9 @@
     <Compile Include="MainGUI.pyw">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RemindGUI.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SheetGUI.py">
       <SubType>Code</SubType>
     </Compile>
