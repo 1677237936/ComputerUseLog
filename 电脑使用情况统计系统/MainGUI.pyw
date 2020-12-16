@@ -34,7 +34,7 @@ def GuiInit():
     #窗口居中
     win32gui.SetWindowPos(MeHwnd,0,int((ScreenWidth-WindowWidth)/2),int((ScreenHeight-WindowHeight)/2),WindowWidth,WindowHeight,win32con.SWP_NOZORDER | win32con.SWP_NOSIZE)
     #窗口圆角
-    win32gui.SetWindowRgn(MeHwnd, win32gui.CreateRoundRectRgn(0, 0, WindowWidth, WindowHeight, 50, 50), True)
+    win32gui.SetWindowRgn(MeHwnd, win32gui.CreateRoundRectRgn(0, 0, WindowWidth, WindowHeight, 60, 60), True)
     #设置透明度1
     win32gui.SetWindowLong(MeHwnd,win32con.GWL_EXSTYLE,win32con.WS_EX_LAYERED)
     win32gui.SetLayeredWindowAttributes(MeHwnd,0,1,win32con.LWA_ALPHA)
@@ -101,30 +101,24 @@ def GuiInit():
                                 win32api.ShowCursor(True)
                             ShowChartOptionGUI()
                             win32gui.EnableWindow(MeHwnd,True)
-                        #周报月报
-                        elif BtnStatus.index(True)==3:
-                            pass
                         #隐藏窗口
-                        elif BtnStatus.index(True)==4:
+                        elif BtnStatus.index(True)==3:
                             while win32api.ShowCursor(True)<0:
                                 win32api.ShowCursor(True)
                             win32api.MessageBox(0,"提示:按下Ctrl+F10可以重新显示窗口","隐藏窗口",win32con.MB_OK | win32con.MB_ICONINFORMATION | win32con.MB_TOPMOST,0)
                             tShowWindow=threading._start_new_thread(HotKeyShowWindow,(MeHwnd,))
                         #超时提醒
-                        elif BtnStatus.index(True)==5:
+                        elif BtnStatus.index(True)==4:
                             win32gui.EnableWindow(MeHwnd,False)
                             while win32api.ShowCursor(True)<0:
                                 win32api.ShowCursor(True)
                             ShowRemindGUI()
                             win32gui.EnableWindow(MeHwnd,True)
-                        #系统设置
-                        elif BtnStatus.index(True)==6:
-                            pass
                         #最小化
-                        elif BtnStatus.index(True)==8:
+                        elif BtnStatus.index(True)==6:
                             win32gui.ShowWindow(MeHwnd,win32con.SW_MINIMIZE)
                         #退出系统
-                        elif BtnStatus.index(True)==7 or BtnStatus.index(True)==9:
+                        elif BtnStatus.index(True)==5 or BtnStatus.index(True)==7:
                             while win32api.ShowCursor(True)<0:
                                 win32api.ShowCursor(True)
                             if win32api.MessageBox(0,"确定要退出系统吗?","提示",win32con.MB_OKCANCEL | win32con.MB_ICONQUESTION | win32con.MB_TOPMOST)==1:
@@ -146,7 +140,7 @@ def GuiInit():
                 pass
         #绘制窗口
         Window.blit(BackgroundImage,[0,0])
-        for i in range(10):
+        for i in range(8):
             if BtnStatus[i]:Window.blit(BtnPng[i],BtnPos[i])
         if IsInWindow:
             if True in BtnStatus:

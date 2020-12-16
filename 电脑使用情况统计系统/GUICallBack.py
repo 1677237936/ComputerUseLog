@@ -26,13 +26,14 @@ RemindType=""
 ExitFlag=False
 #按钮样式变量
 BtnStatus=[]
-for i in range(10):
+for i in range(8):
     BtnStatus.append(False)
 #按钮左上角坐标
-BtnPos=[[65,225],[65,317],[65,415],[65,509],[303,225],[303,317],[303,415],[303,509],[987,52],[1018,42]]
+#1080,661
+BtnPos=[[65,243],[65,357],[65,473],[302,243],[302,357],[302,473],[987,52],[1018,42]]
 #加载按钮
 BtnPng=[]
-for i in range(1,9):
+for i in range(1,7):
     BtnPng.append(pygame.image.load("Images/Hover"+str(i)+".png"))
 #加载控制按钮
 BtnPng.append(pygame.image.load("Images/Min.png"))
@@ -67,19 +68,19 @@ def MouseMoveCheckButton(x,y):
     """
     鼠标移动时检查是否需要更改按钮样式
     """
-    for i in range(8):
+    for i in range(6):
         if IsInRect(x,y,BtnPos[i][0],BtnPos[i][1],200,55):
             BtnStatus[i]=True
         else:
             BtnStatus[i]=False
-    if IsInRect(x,y,BtnPos[8][0]-10,BtnPos[8][1]-15,30,25):
-        BtnStatus[8]=True
+    if IsInRect(x,y,BtnPos[6][0]-10,BtnPos[6][1]-15,30,25):
+        BtnStatus[6]=True
     else:
-        BtnStatus[8]=False
-    if IsInRect(x,y,BtnPos[9][0]-6,BtnPos[9][1]-6,25,25):
-        BtnStatus[9]=True
+        BtnStatus[6]=False
+    if IsInRect(x,y,BtnPos[7][0]-6,BtnPos[7][1]-6,25,25):
+        BtnStatus[7]=True
     else:
-        BtnStatus[9]=False
+        BtnStatus[7]=False
 
 def HotKeyShowWindow(Hwnd):
     """隐藏窗口后检测热键以显示窗口"""
