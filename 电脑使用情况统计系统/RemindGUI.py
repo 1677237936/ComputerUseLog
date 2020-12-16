@@ -127,9 +127,9 @@ class Remind_ui(Frame):
         self.LblType.text = lambda : self.LblTypeVar.get()
         self.LblType.place(relx=0.485, rely=0.460, relwidth=0.150, relheight=0.175)
 
-        self.ComboTypeList = ['弹窗','结束进程','关机',]
-        self.ComboTypeVar = StringVar(value='弹窗')
-        self.ComboType = Combobox(self.FrameMain, state='readonly', text='弹窗', textvariable=self.ComboTypeVar, values=self.ComboTypeList, font=('微软雅黑',10))
+        self.ComboTypeList = ['窗口抖动并弹窗','结束进程','锁屏','关机']
+        self.ComboTypeVar = StringVar(value='窗口抖动并弹窗')
+        self.ComboType = Combobox(self.FrameMain, state='readonly', text='窗口抖动并弹窗', textvariable=self.ComboTypeVar, values=self.ComboTypeList, font=('微软雅黑',10))
         self.ComboType.setText = lambda x: self.ComboTypeVar.set(x)
         self.ComboType.text = lambda : self.ComboTypeVar.get()
         self.ComboType.place(relx=0.650, rely=0.475, relwidth=0.27)

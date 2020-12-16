@@ -55,7 +55,10 @@ def GuiInit():
 
     while True:
         #鼠标光标
-        CurX,CurY=win32api.GetCursorPos()
+        try:
+            CurX,CurY=win32api.GetCursorPos()
+        except:
+            CurX,CurY=(0,0)
         WindowX,WindowY,WindowW,WindowH=win32gui.GetWindowRect(MeHwnd)
         if WindowX<CurX<WindowX+WindowW and WindowY<CurY<WindowY+WindowH:
             IsInWindow=True

@@ -7,6 +7,7 @@ import calendar
 import re
 import os
 import threading
+import random
 from SheetGUI import *
 
 #数据记录字典
@@ -596,7 +597,18 @@ def Remind(path,ttime,type):
                     except:
                         pass
         if RunTime>=ttime:
-            if type=="弹窗":
+            if type=="窗口抖动并弹窗":
+                MeHwnd=win32gui.FindWindow("pygame","基于Python的电脑使用情况统计系统")
+                win32gui.ShowWindow(MeHwnd,win32con.SW_RESTORE)
+                win32gui.SetWindowPos(MeHwnd,win32con.HWND_TOPMOST,0,0,0,0,win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+                win32gui.SetActiveWindow(MeHwnd)
+                Rect=win32gui.GetWindowRect(MeHwnd)
+                for i in range(20):
+                    offsetX=random.randint(-15,15)
+                    offsetY=random.randint(-15,15)
+                    win32gui.SetWindowPos(MeHwnd,0,Rect[0]+offsetX,Rect[1]+offsetY,0,0,win32con.SWP_NOSIZE | win32con.SWP_NOZORDER)
+                    time.sleep(0.05)
+                win32gui.SetWindowPos(MeHwnd,win32con.HWND_NOTOPMOST,Rect[0],Rect[1],0,0,win32con.SWP_NOSIZE)
                 win32api.MessageBox(0,"设定的提醒时间已到!","超时提醒",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
             elif type=="结束进程":
                 try:
@@ -604,6 +616,8 @@ def Remind(path,ttime,type):
                     win32process.TerminateProcess(Handle,0)
                 except:
                     win32api.ShellExecute(0,"open","taskkill","/f /im " + path.split("\\")[-1],os.getcwd(),0)
+            elif type=="锁屏":
+                ctypes.windll.user32.LockWorkStation()
             elif type=="关机":
                 win32api.ShellExecute(0,"open","shutdown","-s -t 0",os.getcwd(),0)
             break
