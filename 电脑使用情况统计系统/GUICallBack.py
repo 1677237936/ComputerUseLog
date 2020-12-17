@@ -25,6 +25,8 @@ RemindPath=""
 RemindTime=0
 RemindType=""
 ExitFlag=False
+#超时提醒显示窗口时退出热键显示窗口线程
+ShowFlag=False
 #按钮样式变量
 BtnStatus=[]
 for i in range(8):
@@ -86,7 +88,11 @@ def MouseMoveCheckButton(x,y):
 def HotKeyShowWindow(Hwnd):
     """隐藏窗口后检测热键以显示窗口"""
     win32gui.ShowWindow(Hwnd,win32con.SW_HIDE)
+    global ShowFlag
+    ShowFlag=False
     while True:
+        if ShowFlag:
+            return
         if win32api.GetAsyncKeyState(win32con.VK_LCONTROL) and win32api.GetAsyncKeyState(win32con.VK_F10):
             win32gui.ShowWindow(Hwnd,win32con.SW_SHOW)
             win32gui.SetActiveWindow(Hwnd)
@@ -597,9 +603,11 @@ def Remind(path,ttime,type):
                     except:
                         pass
         if RunTime>=ttime:
-            if type=="窗口抖动并弹窗":
+            if type=="窗口抖动":
                 MeHwnd=win32gui.FindWindow("pygame","基于Python的电脑使用情况统计系统")
                 win32gui.ShowWindow(MeHwnd,win32con.SW_RESTORE)
+                global ShowFlag
+                ShowFlag=True
                 win32gui.SetWindowPos(MeHwnd,win32con.HWND_TOPMOST,0,0,0,0,win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
                 win32gui.SetActiveWindow(MeHwnd)
                 Rect=win32gui.GetWindowRect(MeHwnd)
@@ -609,7 +617,6 @@ def Remind(path,ttime,type):
                     win32gui.SetWindowPos(MeHwnd,0,Rect[0]+offsetX,Rect[1]+offsetY,0,0,win32con.SWP_NOSIZE | win32con.SWP_NOZORDER)
                     time.sleep(0.05)
                 win32gui.SetWindowPos(MeHwnd,win32con.HWND_NOTOPMOST,Rect[0],Rect[1],0,0,win32con.SWP_NOSIZE)
-                win32api.MessageBox(0,"设定的提醒时间已到!","超时提醒",win32con.MB_OK | win32con.MB_ICONEXCLAMATION | win32con.MB_TOPMOST,0)
             elif type=="结束进程":
                 try:
                     Handle=win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS,False,Pid)
