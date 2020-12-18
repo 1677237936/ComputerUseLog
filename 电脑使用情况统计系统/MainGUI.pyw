@@ -34,7 +34,8 @@ def GuiInit():
     #窗口居中
     win32gui.SetWindowPos(MeHwnd,0,int((ScreenWidth-WindowWidth)/2),int((ScreenHeight-WindowHeight)/2),WindowWidth,WindowHeight,win32con.SWP_NOZORDER | win32con.SWP_NOSIZE)
     #窗口圆角
-    win32gui.SetWindowRgn(MeHwnd, win32gui.CreateRoundRectRgn(0, 0, WindowWidth, WindowHeight, 60, 60), True)
+    RoundRegion=win32gui.CreateRoundRectRgn(0, 0, WindowWidth, WindowHeight, 60, 60)
+    win32gui.SetWindowRgn(MeHwnd, RoundRegion, True)
     #设置透明度1
     win32gui.SetWindowLong(MeHwnd,win32con.GWL_EXSTYLE,win32con.WS_EX_LAYERED)
     win32gui.SetLayeredWindowAttributes(MeHwnd,0,1,win32con.LWA_ALPHA)
