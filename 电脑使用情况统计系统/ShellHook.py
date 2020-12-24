@@ -27,17 +27,9 @@ def WindowProc(Hwnd,uMsg,wParam,lParam):
             print("钩取到窗口销毁消息")
         elif wParam==3: #HSHELL_ACTIVATESHELLWINDOW
             pass
-        elif wParam==4: #HSHELL_WINDOWACTIVATED
-            pass
-        elif wParam==5: #HSHELL_GETMINRECT
-            pass
         elif wParam==6: #HSHELL_REDRAW
             GetForegroundInfo()
             print("钩取到窗口重绘消息")
-        elif wParam==7: #HSHELL_TASKMAN
-            pass
-        elif wParam==8: #HSHELL_LANGUAGE
-            pass
         elif wParam==32772: #ACTIVATE
             GetForegroundInfo()
             print("钩取到窗口激活消息")
