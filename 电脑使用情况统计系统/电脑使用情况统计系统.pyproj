@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>d70e682b-3c34-4576-83b4-5a12b8c94928</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>MainGUI.pyw</StartupFile>
+    <StartupFile>MainGUI.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -29,7 +29,7 @@
     <Compile Include="GUICallBack.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainGUI.pyw">
+    <Compile Include="MainGUI.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="RemindGUI.py">
