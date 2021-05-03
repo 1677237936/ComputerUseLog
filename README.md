@@ -15,14 +15,14 @@ ___
 
 #### 部分截图
 文件说明
-![文件说明](https://www.starlwr.com/Images/1.png)
+![文件说明](https://www.starlwr.com/Images/ComputerUseLog/1.png)
 UI
-![UI](https://www.starlwr.com/Images/2.png)
+![UI](https://www.starlwr.com/Images/ComputerUseLog/2.png)
 数据汇总
-![数据汇总](https://www.starlwr.com/Images/3.png)
+![数据汇总](https://www.starlwr.com/Images/ComputerUseLog/3.png)
 今日数据
-![今日数据](https://www.starlwr.com/Images/4.png)
+![今日数据](https://www.starlwr.com/Images/ComputerUseLog/4.png)
 柱形图
-![柱形图](https://www.starlwr.com/Images/5.png)
+![柱形图](https://www.starlwr.com/Images/ComputerUseLog/5.png)
 饼图
-![饼图](https://www.starlwr.com/Images/6.png)
+![饼图](https://www.starlwr.com/Images/ComputerUseLog/6.png)
